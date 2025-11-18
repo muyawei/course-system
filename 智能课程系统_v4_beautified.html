@@ -1,0 +1,2222 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>智能课程系统</title>
+    <script src="https://cdn.ckeditor.com/ckeditor5/39.0.1/classic/ckeditor.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    <style>
+        :root {
+            --primary-color: #4361ee;
+            --secondary-color: #3f37c9;
+            --accent-color: #4cc9f0;
+            --success-color: #4ade80;
+            --warning-color: #facc15;
+            --danger-color: #f87171;
+            --light-color: #f8f9fa;
+            --dark-color: #212529;
+            --border-radius: 8px;
+            --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4edf5 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: linear-gradient(120deg, var(--primary-color), var(--secondary-color));
+            border-radius: var(--border-radius);
+            color: white;
+            box-shadow: var(--box-shadow);
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .card {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            padding: 25px;
+            margin-bottom: 25px;
+            transition: var(--transition);
+        }
+
+        .card:hover {
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-title {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card-title i {
+            font-size: 1.8rem;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--dark-color);
+        }
+
+        input, textarea, select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e2e8f0;
+            border-radius: var(--border-radius);
+            font-family: inherit;
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 3px rgba(76, 201, 240, 0.2);
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 24px;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: var(--transition);
+            text-align: center;
+        }
+
+        .btn:hover {
+            background: var(--secondary-color);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        .btn-success {
+            background: var(--success-color);
+        }
+
+        .btn-success:hover {
+            background: #22c55e;
+        }
+
+        .btn-warning {
+            background: var(--warning-color);
+            color: var(--dark-color);
+        }
+
+        .btn-warning:hover {
+            background: #eab308;
+        }
+
+        .btn-danger {
+            background: var(--danger-color);
+        }
+
+        .btn-danger:hover {
+            background: #ef4444;
+        }
+
+        .btn-secondary {
+            background: #64748b;
+        }
+
+        .btn-secondary:hover {
+            background: #475569;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .file-upload-area {
+            border: 2px dashed #cbd5e1;
+            border-radius: var(--border-radius);
+            padding: 30px;
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
+            background: #f8fafc;
+        }
+
+        .file-upload-area:hover {
+            border-color: var(--primary-color);
+            background: #f1f5f9;
+        }
+
+        .file-upload-area i {
+            font-size: 3rem;
+            color: #94a3b8;
+            margin-bottom: 15px;
+        }
+
+        .file-list {
+            margin-top: 15px;
+        }
+
+        .file-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            background: #f1f5f9;
+            border-radius: var(--border-radius);
+            margin-bottom: 10px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: var(--primary-color);
+        }
+
+        .loading::after {
+            content: "";
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(67, 97, 238, 0.3);
+            border-top-color: var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-left: 10px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .alert {
+            padding: 15px;
+            border-radius: var(--border-radius);
+            margin-bottom: 20px;
+        }
+
+        .alert-success {
+            background: #dcfce7;
+            border: 1px solid #bbf7d0;
+            color: #166534;
+        }
+
+        .alert-error {
+            background: #fee2e2;
+            border: 1px solid #fecaca;
+            color: #991b1b;
+        }
+
+        .preview-container {
+            background: #f8fafc;
+            border-radius: var(--border-radius);
+            padding: 20px;
+            margin-top: 20px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .material-card {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .material-card h3 {
+            color: var(--primary-color);
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #f1f5f9;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .tab {
+            padding: 10px 20px;
+            background: #e2e8f0;
+            border: none;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-weight: 600;
+            transition: var(--transition);
+        }
+
+        .tab.active {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .course-option {
+            padding: 15px 20px;
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            margin-bottom: 15px;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .course-option:hover {
+            border-color: var(--primary-color);
+            background: #f8fafc;
+        }
+
+        .course-option.selected {
+            border-color: var(--primary-color);
+            background: #eff6ff;
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
+        }
+
+        .course-icon {
+            font-size: 2rem;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background: #e0f2fe;
+            color: var(--primary-color);
+        }
+
+        .course-info h3 {
+            margin-bottom: 5px;
+        }
+
+        .course-info p {
+            color: #64748b;
+            font-size: 0.9rem;
+        }
+
+        .uaro-option {
+            background: #fff7ed;
+            color: #ea580c;
+        }
+
+        .uaro-option .course-icon {
+            background: #ffedd5;
+            color: #ea580c;
+        }
+
+        .kiro-option {
+            background: #f0f9ff;
+            color: #0284c7;
+        }
+
+        .kiro-option .course-icon {
+            background: #e0f2fe;
+            color: #0284c7;
+        }
+
+        .microcontroller-option {
+            background: #f0fdf4;
+            color: #16a34a;
+        }
+
+        .microcontroller-option .course-icon {
+            background: #dcfce7;
+            color: #16a34a;
+        }
+
+        .python-option {
+            background: #fff3e0;
+            color: #f39c12;
+        }
+
+        .python-option .course-icon {
+            background: #ffe0b2;
+            color: #f39c12;
+        }
+
+        footer {
+            text-align: center;
+            padding: 20px;
+            color: #64748b;
+            font-size: 0.9rem;
+            margin-top: 30px;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .card {
+                padding: 20px;
+            }
+            
+            .btn-group {
+                flex-direction: column;
+            }
+            
+            .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>智能课程系统</h1>
+            <p class="subtitle">AI驱动的少儿编程课程生成平台</p>
+        </header>
+
+        <!-- 课程类型选择 -->
+        <div class="card">
+            <h2 class="card-title">选择课程类型</h2>
+            <div class="course-options">
+                <div class="course-option uaro-option" onclick="selectCourseType('uaro')">
+                    <div class="course-icon">🧱</div>
+                    <div class="course-info">
+                        <h3>Uaro课程（编码积木）</h3>
+                        <p>适合中班到大班上，通过积木式编程培养逻辑思维</p>
+                    </div>
+                </div>
+                
+                <div class="course-option kiro-option" onclick="selectCourseType('kiro')">
+                    <div class="course-icon">🃏</div>
+                    <div class="course-info">
+                        <h3>Kiro课程（卡片式编程）</h3>
+                        <p>适合大班到一年级，通过卡片游戏学习编程概念</p>
+                    </div>
+                </div>
+                
+                <div class="course-option microcontroller-option" onclick="selectCourseType('microcontroller')">
+                    <div class="course-icon">⚙️</div>
+                    <div class="course-info">
+                        <h3>单片机课程</h3>
+                        <p>适合2-4年级，结合硬件搭建和Scratch编程</p>
+                    </div>
+                </div>
+                
+                <div class="course-option python-option" onclick="selectCourseType('python')">
+                    <div class="course-icon">🐍</div>
+                    <div class="course-info">
+                        <h3>Python课程</h3>
+                        <p>适合4年级到初二，培养编程思维和解决实际问题能力</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 上传材料和生成课程目标 -->
+        <div class="card">
+            <h2 class="card-title">上传课程材料</h2>
+            <div class="form-group">
+                <label for="course-theme">课程主题（可选）：</label>
+                <input type="text" id="course-theme" placeholder="请输入课程主题">
+            </div>
+            
+            <div class="form-group">
+                <label>上传课程材料：</label>
+                <div class="file-upload-area" onclick="document.getElementById('file-input').click()">
+                    <i>📁</i>
+                    <p>点击选择文件或拖拽文件到此处</p>
+                    <p style="font-size: 0.9rem; color: #64748b;">支持 PPT、PPTX、PDF、DOC、DOCX、TXT 格式</p>
+                    <input type="file" id="file-input" multiple style="display: none;" accept=".ppt,.pptx,.pdf,.doc,.docx,.txt">
+                </div>
+                <div class="file-list" id="file-list"></div>
+            </div>
+            
+            <button class="btn" onclick="generateCourseGoals()">生成课程目标</button>
+            
+            <div class="loading" id="goals-loading" style="display: none;">AI正在生成课程目标...</div>
+            <div id="goals-result"></div>
+        </div>
+
+        <!-- 生成课程材料 -->
+        <div class="card" id="materials-section" style="display: none;">
+            <h2 class="card-title">生成课程材料</h2>
+            <button class="btn btn-success" onclick="generateCourseMaterials()">生成全套课程材料</button>
+            
+            <div class="loading" id="materials-loading" style="display: none;">AI正在生成课程材料...</div>
+            <div id="materials-result"></div>
+        </div>
+
+        <!-- 材料预览和导出 -->
+        <div class="card" id="materials-preview" style="display: none;">
+            <h2 class="card-title">材料预览与导出</h2>
+            <div class="btn-group">
+                <button class="btn btn-success" onclick="saveAllMaterials()">保存所有材料</button>
+                <button class="btn btn-warning" onclick="exportAllMaterials()">导出所有材料</button>
+                <button class="btn" onclick="saveAndExportAllMaterials()">保存并导出所有材料</button>
+            </div>
+            
+            <div id="material-preview-cards"></div>
+        </div>
+
+        <footer>
+            <p>智能课程系统 © 2025 - 专为少儿编程教育机构设计</p>
+        </footer>
+    </div>
+
+    <script>
+        // 配置参数
+        const CONFIG = {
+            API_KEY: 'sk-a088d94696eb49438b25205761a0744f', // DeepSeek API密钥
+            API_URL: 'https://api.deepseek.com/chat/completions',
+            MODEL: 'deepseek-chat',
+            MAX_FILE_SIZE: 10 * 1024 * 1024, // 10MB
+            ALLOWED_TYPES: [
+                'application/vnd.ms-powerpoint',
+                'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+                'application/pdf',
+                'application/msword',
+                'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                'text/plain'
+            ]
+        };
+
+        // Kiro课程配置
+        const KIRO_CONFIG = {
+            COURSE_NAME: "Kiro课程（卡片式编程）",
+            AGE_GROUP: "大班到1年级",
+            PROGRAMMING_TYPE: "卡片式编程",
+            BUILDING_TYPE: "小颗粒铆钉物理搭建",
+            CORE_LOOPS: [
+                "课前PPT准备",
+                "设计课标",
+                "生成家长图片",
+                "设计板书",
+                "生成课后作业",
+                "生成课后反馈",
+                "生成互动游戏",
+                "生成逻辑/数语练习"
+            ]
+        };
+        
+        // 单片机课程配置
+        const MICROCONTROLLER_CONFIG = {
+            COURSE_NAME: "单片机课程（2-4年级）",
+            AGE_GROUP: "2-4年级",
+            PROGRAMMING_TYPE: "Scratch编程",
+            BUILDING_TYPE: "基础搭建配合传感器材",
+            CORE_LOOPS: [
+                "课堂内容",      // 课程预告，图片形式
+                "课堂板书",      // 老师参考，图片形式
+                "课后作业",      // 巩固练习，Word形式
+                "课后反馈",      // 家长反馈，Word形式
+                "课后扩展",      // 数学思维/科学实验，Word形式
+                "科学实验"       // 游戏或小实验，Word形式
+            ]
+        };
+        
+        // Python课程配置
+        const PYTHON_CONFIG = {
+            COURSE_NAME: "Python课程（4年级到初二）",
+            AGE_GROUP: "4年级到初二",
+            PROGRAMMING_TYPE: "Python编程",
+            BUILDING_TYPE: "文本编程",
+            CORE_LOOPS: [
+                "课堂内容",      // 课程预告，图片形式
+                "课堂板书",      // 老师参考，图片形式
+                "课后作业",      // 巩固练习，Word形式
+                "课后反馈",      // 家长反馈，Word形式
+                "课后扩展"       // 编程科普，Word形式
+            ]
+        };
+        
+        // 全局变量
+        let uploadedFiles = [];
+        let courseGoals = "";
+        let courseMaterials = {};
+        let editors = {};
+        let currentCourseType = "uaro"; // 默认为uaro课程
+
+        // 选择课程类型
+        function selectCourseType(courseType) {
+            currentCourseType = courseType;
+            
+            // 更新UI
+            document.querySelectorAll('.course-option').forEach(option => {
+                option.classList.remove('selected');
+            });
+            
+            if (courseType === 'kiro') {
+                document.querySelector('.kiro-option').classList.add('selected');
+            } else if (courseType === 'microcontroller') {
+                document.querySelector('.microcontroller-option').classList.add('selected');
+            } else if (courseType === 'python') {
+                document.querySelector('.python-option').classList.add('selected');
+            } else {
+                document.querySelector('.uaro-option').classList.add('selected');
+            }
+        }
+
+        // 显示成功消息
+        function showSuccess(message) {
+            // 创建成功消息元素
+            const successDiv = document.createElement('div');
+            successDiv.className = 'alert alert-success';
+            successDiv.textContent = message;
+            successDiv.style.position = 'fixed';
+            successDiv.style.top = '20px';
+            successDiv.style.right = '20px';
+            successDiv.style.zIndex = '1000';
+            
+            // 添加到页面
+            document.body.appendChild(successDiv);
+            
+            // 3秒后自动移除
+            setTimeout(() => {
+                if (successDiv.parentNode) {
+                    successDiv.parentNode.removeChild(successDiv);
+                }
+            }, 3000);
+        }
+
+        // 显示错误消息
+        function showError(message) {
+            // 创建错误消息元素
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'alert alert-error';
+            errorDiv.textContent = message;
+            errorDiv.style.position = 'fixed';
+            errorDiv.style.top = '20px';
+            errorDiv.style.right = '20px';
+            errorDiv.style.zIndex = '1000';
+            
+            // 添加到页面
+            document.body.appendChild(errorDiv);
+            
+            // 3秒后自动移除
+            setTimeout(() => {
+                if (errorDiv.parentNode) {
+                    errorDiv.parentNode.removeChild(errorDiv);
+                }
+            }, 3000);
+        }
+
+        // 生成课程目标
+        async function generateCourseGoals() {
+            const loading = document.getElementById('goals-loading');
+            const resultDiv = document.getElementById('goals-result');
+            const courseTheme = document.getElementById('course-theme').value.trim();
+            
+            if (uploadedFiles.length === 0 && !courseTheme) {
+                showError("请先上传课程材料或输入课程主题");
+                return;
+            }
+
+            try {
+                loading.style.display = 'block';
+                resultDiv.innerHTML = '';
+
+                // 构建提示词
+                let prompt = "";
+                
+                // 根据课程类型调整提示词
+                if (currentCourseType === 'kiro') {
+                    prompt += "您是一位资深的少儿编程教育专家，专注于Kiro课程（卡片式编程），适合大班到一年级的孩子。";
+                } else if (currentCourseType === 'microcontroller') {
+                    prompt += "您是一位资深的少儿编程教育专家，专注于单片机课程（2-4年级），结合硬件搭建和Scratch编程。";
+                } else if (currentCourseType === 'python') {
+                    prompt += "您是一位资深的少儿编程教育专家，专注于Python课程（4年级到初二），注重培养学生的编程思维和解决实际问题的能力。";
+                } else {
+                    prompt += "您是一位资深的少儿编程教育专家，专注于Uaro课程（编码积木），适合中班到大班的孩子。";
+                }
+                
+                prompt += "\n\n请根据以下内容生成课程目标：\n";
+                
+                if (courseTheme) {
+                    prompt += `课程主题：${courseTheme}\n`;
+                }
+                
+                if (uploadedFiles.length > 0) {
+                    prompt += "上传的课程材料：\n";
+                    uploadedFiles.forEach((file, index) => {
+                        prompt += `${index + 1}. ${file.name}\n`;
+                    });
+                }
+                
+                prompt += "\n请按照以下格式生成课程目标：\n";
+                prompt += "1. 课程主题\n";
+                prompt += "2. 课程目标（知识、技能、情感）\n";
+                prompt += "3. 课程重难点\n";
+                prompt += "4. 课程思政元素\n";
+                
+                // 调用AI API
+                const response = await fetch(CONFIG.API_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${CONFIG.API_KEY}`,
+                        'Content-Type': 'application/json',
+                        'X-DashScope-SSE': 'disable'  // 禁用SSE以避免跨域问题
+                    },
+                    body: JSON.stringify({
+                        model: CONFIG.MODEL,
+                        messages: [
+                            {
+                                role: "system",
+                                content: "你是一位资深的少儿编程教育专家，专注于设计高质量的课程内容。"
+                            },
+                            {
+                                role: "user",
+                                content: prompt
+                            }
+                        ],
+                        temperature: 0.7
+                    })
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`API调用失败: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                const goals = data.choices[0].message.content;
+                
+                // 显示结果
+                resultDiv.innerHTML = `
+                    <div class="preview-container">
+                        <pre style="white-space: pre-wrap; word-wrap: break-word;">${goals}</pre>
+                        <div class="input-group" style="margin-top: 1rem;">
+                            <button class="btn btn-success" onclick="editCourseGoals()" style="color: white;">编辑课程目标</button>
+                            <button class="btn btn-secondary" onclick="openGoalsRegenerateDialog()" style="color: white; margin-left: 10px;">重新生成课程目标</button>
+                        </div>
+                        <!-- 重新生成对话框 -->
+                        <div id="goals-regenerate-dialog" style="display: none; margin-top: 15px; padding: 15px; border: 1px solid #ddd; border-radius: 8px; background: #f9f9f9;">
+                            <h4>重新生成课程目标</h4>
+                            <div id="goals-chat-history" style="max-height: 200px; overflow-y: auto; margin-bottom: 10px; padding: 10px; background: white; border-radius: 4px; border: 1px solid #eee;">
+                                <!-- 对话历史将在这里显示 -->
+                            </div>
+                            <div style="display: flex;">
+                                <input type="text" id="goals-chat-input" placeholder="输入您的修改要求..." style="flex: 1; padding: 8px; border: 1px solid #ddd; border-radius: 4px; margin-right: 10px;">
+                                <button class="btn btn-secondary" onclick="sendGoalsChatMessage()" style="color: white;">发送</button>
+                                <button class="btn btn-secondary" onclick="closeGoalsRegenerateDialog()" style="color: white; margin-left: 10px;">关闭</button>
+                            </div>
+                            <div class="loading" id="goals-regenerate-loading" style="display: none; margin-top: 10px;">AI正在重新生成课程目标...</div>
+                        </div>
+                    </div>
+                `;
+                
+                courseGoals = goals;
+                
+                // 显示生成课程材料区域
+                document.getElementById('materials-section').style.display = 'block';
+            } catch (error) {
+                console.error("生成课程目标失败:", error);
+                showError(`生成课程目标失败: ${error.message}`);
+            } finally {
+                loading.style.display = 'none';
+            }
+        }
+
+        // 打开课程目标重新生成对话框
+        function openGoalsRegenerateDialog() {
+            const dialog = document.getElementById('goals-regenerate-dialog');
+            dialog.style.display = 'block';
+            
+            // 初始化对话历史
+            const chatHistory = document.getElementById('goals-chat-history');
+            chatHistory.innerHTML = `
+                <div style="margin-bottom: 10px; padding: 8px; background: #e3f2fd; border-radius: 4px;">
+                    <strong>系统:</strong> 您可以告诉我您对课程目标的具体要求，我会根据您的要求重新生成课程目标。
+                </div>
+            `;
+        }
+
+        // 关闭课程目标重新生成对话框
+        function closeGoalsRegenerateDialog() {
+            const dialog = document.getElementById('goals-regenerate-dialog');
+            dialog.style.display = 'none';
+        }
+
+        // 发送课程目标聊天消息
+        async function sendGoalsChatMessage() {
+            const input = document.getElementById('goals-chat-input');
+            const message = input.value.trim();
+            
+            if (!message) {
+                showError("请输入您的修改要求");
+                return;
+            }
+            
+            const chatHistory = document.getElementById('goals-chat-history');
+            const loading = document.getElementById('goals-regenerate-loading');
+            
+            // 显示用户消息
+            chatHistory.innerHTML += `
+                <div style="margin-bottom: 10px; padding: 8px; background: #f0f0f0; border-radius: 4px;">
+                    <strong>您:</strong> ${message}
+                </div>
+            `;
+            
+            // 清空输入框
+            input.value = '';
+            
+            // 显示加载状态
+            loading.style.display = 'block';
+            chatHistory.scrollTop = chatHistory.scrollHeight;
+            
+            try {
+                // 构建提示词
+                let prompt = `您是一位资深的少儿编程教育专家。请根据以下要求重新生成课程目标：
+
+当前课程目标：
+${courseGoals}
+
+用户的具体要求：
+${message}
+
+请按照以下格式重新生成课程目标：
+1. 课程主题
+2. 课程目标（知识、技能、情感）
+3. 课程重难点
+4. 课程思政元素
+
+请直接输出修改后的课程目标，不需要额外说明：`;
+                
+                // 调用AI API
+                const response = await fetch(CONFIG.API_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${CONFIG.API_KEY}`,
+                        'Content-Type': 'application/json',
+                        'X-DashScope-SSE': 'disable'  // 禁用SSE以避免跨域问题
+                    },
+                    body: JSON.stringify({
+                        model: CONFIG.MODEL,
+                        messages: [
+                            {
+                                role: "system",
+                                content: "你是一位资深的少儿编程教育专家，专注于设计高质量的课程内容。"
+                            },
+                            {
+                                role: "user",
+                                content: prompt
+                            }
+                        ],
+                        temperature: 0.7
+                    })
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`API调用失败: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                const newGoals = data.choices[0].message.content;
+                
+                // 更新课程目标
+                courseGoals = newGoals;
+                
+                // 更新显示内容
+                const previewContainer = document.querySelector('#goals-result .preview-container pre');
+                previewContainer.textContent = newGoals;
+                
+                // 显示AI回复
+                chatHistory.innerHTML += `
+                    <div style="margin-bottom: 10px; padding: 8px; background: #e8f5e9; border-radius: 4px;">
+                        <strong>AI:</strong> ${newGoals}
+                    </div>
+                `;
+                
+                showSuccess(`课程目标已更新！`);
+            } catch (error) {
+                console.error("重新生成课程目标失败:", error);
+                showError(`重新生成课程目标失败: ${error.message}`);
+                
+                // 显示错误消息
+                chatHistory.innerHTML += `
+                    <div style="margin-bottom: 10px; padding: 8px; background: #fadbd8; border-radius: 4px;">
+                        <strong>系统:</strong> 重新生成课程目标失败: ${error.message}
+                    </div>
+                `;
+            } finally {
+                loading.style.display = 'none';
+                chatHistory.scrollTop = chatHistory.scrollHeight;
+            }
+        }
+
+        // 编辑课程目标
+        function editCourseGoals() {
+            const resultDiv = document.getElementById('goals-result');
+            resultDiv.innerHTML = `
+                <div class="input-group">
+                    <textarea id="goals-editor" style="width: 100%; height: 300px; font-family: 'Segoe UI', system-ui, sans-serif; font-size: 14px; line-height: 1.6; padding: 15px; border: 1px solid #ddd; border-radius: 4px; resize: vertical;">${courseGoals}</textarea>
+                </div>
+                <div class="input-group" style="margin-top: 1rem;">
+                    <button class="btn btn-success" onclick="saveCourseGoals()" style="color: white;">保存课程目标</button>
+                    <button class="btn btn-secondary" onclick="cancelEditGoals()" style="color: white; margin-left: 10px;">取消</button>
+                </div>
+            `;
+        }
+
+        // 保存课程目标
+        function saveCourseGoals() {
+            const editor = document.getElementById('goals-editor');
+            courseGoals = editor.value;
+            showSuccess("课程目标已保存！");
+            // 重新显示预览
+            document.getElementById('goals-result').innerHTML = `
+                <div class="preview-container">
+                    <pre style="white-space: pre-wrap; word-wrap: break-word;">${courseGoals}</pre>
+                    <div class="input-group" style="margin-top: 1rem;">
+                        <button class="btn btn-success" onclick="editCourseGoals()" style="color: white;">编辑课程目标</button>
+                        <button class="btn btn-secondary" onclick="openGoalsRegenerateDialog()" style="color: white; margin-left: 10px;">重新生成课程目标</button>
+                    </div>
+                </div>
+            `;
+            
+            // 显示生成课程材料区域
+            document.getElementById('materials-section').style.display = 'block';
+        }
+
+        // 取消编辑课程目标
+        function cancelEditGoals() {
+            // 重新显示预览
+            document.getElementById('goals-result').innerHTML = `
+                <div class="preview-container">
+                    <pre style="white-space: pre-wrap; word-wrap: break-word;">${courseGoals}</pre>
+                    <div class="input-group" style="margin-top: 1rem;">
+                        <button class="btn btn-success" onclick="editCourseGoals()" style="color: white;">编辑课程目标</button>
+                        <button class="btn btn-secondary" onclick="openGoalsRegenerateDialog()" style="color: white; margin-left: 10px;">重新生成课程目标</button>
+                    </div>
+                </div>
+            `;
+            
+            // 显示生成课程材料区域
+            document.getElementById('materials-section').style.display = 'block';
+        }
+
+        // 生成课程材料
+        async function generateCourseMaterials() {
+            if (!courseGoals) {
+                showError("请先生成课程目标");
+                return;
+            }
+
+            const loading = document.getElementById('materials-loading');
+            const resultDiv = document.getElementById('materials-result');
+            const previewSection = document.getElementById('materials-preview');
+            const previewCards = document.getElementById('material-preview-cards');
+
+            try {
+                loading.style.display = 'block';
+                resultDiv.innerHTML = '';
+                previewCards.innerHTML = '';
+
+                // 根据课程类型确定核心环节
+                let coreLoops = [];
+                if (currentCourseType === 'kiro') {
+                    coreLoops = KIRO_CONFIG.CORE_LOOPS;
+                } else if (currentCourseType === 'microcontroller') {
+                    coreLoops = MICROCONTROLLER_CONFIG.CORE_LOOPS;
+                } else if (currentCourseType === 'python') {
+                    coreLoops = PYTHON_CONFIG.CORE_LOOPS;
+                } else {
+                    coreLoops = [
+                        "课前预热",
+                        "课堂游戏设计",
+                        "板书设计",
+                        "亲子任务",
+                        "纸质作业",
+                        "课后反馈"
+                    ];
+                }
+
+                // 逐个生成材料
+                for (let i = 0; i < coreLoops.length; i++) {
+                    const type = coreLoops[i];
+                    try {
+                        // 显示正在生成的材料类型
+                        resultDiv.innerHTML = `<div class="loading">正在生成${type}...</div>`;
+                        
+                        // 生成提示词
+                        const prompt = generateMaterialPrompt(type);
+                        
+                        // 调用AI API
+                        const response = await fetch(CONFIG.API_URL, {
+                            method: 'POST',
+                            headers: {
+                                'Authorization': `Bearer ${CONFIG.API_KEY}`,
+                                'Content-Type': 'application/json',
+                                'X-DashScope-SSE': 'disable'  // 禁用SSE以避免跨域问题
+                            },
+                            body: JSON.stringify({
+                                model: CONFIG.MODEL,
+                                messages: [
+                                    {
+                                        role: "system",
+                                        content: "你是一位资深的少儿编程教育专家，专注于设计高质量的课程内容。"
+                                    },
+                                    {
+                                        role: "user",
+                                        content: prompt
+                                    }
+                                ],
+                                temperature: 0.7
+                            })
+                        });
+                        
+                        if (!response.ok) {
+                            throw new Error(`API调用失败: ${response.status}`);
+                        }
+                        
+                        const data = await response.json();
+                        const content = data.choices[0].message.content;
+                        
+                        // 保存到全局变量
+                        courseMaterials[type] = content;
+                    } catch (error) {
+                        console.error(`生成${type}失败:`, error);
+                        courseMaterials[type] = `生成${type}时出现错误: ${error.message}`;
+                    }
+                }
+
+                // 显示成功消息
+                showSuccess("所有课程材料已生成完成！");
+                
+                // 显示材料预览
+                displayCourseMaterials();
+                
+                // 显示预览区域
+                previewSection.style.display = 'block';
+            } catch (error) {
+                console.error("生成课程材料失败:", error);
+                showError(`生成课程材料失败: ${error.message}`);
+            } finally {
+                loading.style.display = 'none';
+            }
+        }
+
+        // 生成材料提示词
+        function generateMaterialPrompt(type) {
+            let prompt = "";
+            
+            if (currentCourseType === 'kiro') {
+                // Kiro课程提示词
+                prompt = `你是一位拥有8年一线教学经验的低龄段机器人编程教育专家，特别擅长引导大班至一年级的孩子。你的教学根基是"建构主义"与"游戏化学习"，你深信教育的本质不是灌输，而是点燃好奇心，并为孩子搭建通往知识的脚手架。你不仅精通技术，更深谙儿童心理学，能精准地将抽象概念转化为适合孩子认知的趣味活动。
+
+请根据以下课程目标生成${type}内容：
+
+课程目标：
+${courseGoals}
+
+请按照以下要求生成内容：
+- 内容需符合大班至一年级儿童认知特点
+- 体现建构主义与游戏化学习理念
+- 格式清晰易读
+- 特别注意：${type}的格式要求为：${KIRO_CONFIG.CORE_LOOPS.includes(type) ? "请根据Kiro课程特点生成相应内容" : "请根据教育价值合理设计"}
+- 其他内容请根据教育价值合理设计
+
+请直接输出${type}内容，不需要额外说明：`;
+            } else if (currentCourseType === 'microcontroller') {
+                // 单片机课程提示词
+                prompt = `你是一位资深的少儿编程教育专家，专注于单片机和硬件编程教学，特别擅长引导2-4年级的孩子。你的教学结合了硬件搭建和软件编程，注重培养孩子的动手能力和逻辑思维。
+
+请根据以下课程目标生成${type}内容：
+
+课程目标：
+${courseGoals}
+
+请按照以下要求生成内容：
+- 内容需符合2-4年级儿童认知特点
+- 结合硬件搭建和Scratch编程
+- 体现STEAM教育理念
+- 格式要求：`;
+                
+                // 根据材料类型添加具体要求
+                switch (type) {
+                    case "课堂内容":
+                        prompt += "图片形式，课程预告，简单易懂地告诉家长这节课我们学什么，孩子会掌握什么能力，与学科相关的知识或者结构";
+                        break;
+                    case "课堂板书":
+                        prompt += "图片形式，给老师做参考，孩子们会抄写老师的板书";
+                        break;
+                    case "课后作业":
+                        prompt += "Word形式，包含单词积累、数学加油站、读代码、编写程序几部分，结合学校课标和编程考级真题";
+                        break;
+                    case "课后反馈":
+                        prompt += "Word形式，给家长反馈孩子的表现，基于课堂目标生成，要留出老师自由发挥部分";
+                        break;
+                    case "课后扩展":
+                        prompt += "Word形式，对应的数学思维、科学实验、或者竞赛题";
+                        break;
+                    case "科学实验":
+                        prompt += "Word形式，提高孩子的兴趣，每节课有一个游戏或者小实验";
+                        break;
+                    default:
+                        prompt += "请根据教育价值合理设计";
+                }
+                
+                prompt += `
+- 其他内容请根据教育价值合理设计
+
+请直接输出${type}内容，不需要额外说明：`;
+            } else if (currentCourseType === 'python') {
+                // Python课程提示词
+                prompt = `你是一位资深的少儿编程教育专家，专注于Python编程教学，特别擅长引导4年级到初二的学生。你的教学注重培养学生的编程思维、逻辑思维和解决实际问题的能力，强调与数学、英语等学科的融合。
+
+请根据以下课程目标生成${type}内容：
+
+课程目标：
+${courseGoals}
+
+请按照以下要求生成内容：
+- 内容需符合4年级到初二学生的认知特点
+- 体现编程思维和逻辑思维训练
+- 强调与数学、英语等学科的融合
+- 培养学生分析和解决实际问题的能力
+- 格式要求：`;
+                
+                // 根据材料类型添加具体要求
+                switch (type) {
+                    case "课堂内容":
+                        prompt += "图片形式，课程预告，简单易懂地告诉家长这节课我们学什么，孩子会掌握什么能力，与学科相关的知识";
+                        break;
+                    case "课堂板书":
+                        prompt += "图片形式，给老师做参考，孩子们会抄写老师的板书";
+                        break;
+                    case "课后作业":
+                        prompt += "Word形式，包含单词积累、数学加油站、读代码、编写程序四部分，结合学校课标和编程考级真题";
+                        break;
+                    case "课后反馈":
+                        prompt += "Word形式，给家长反馈孩子的表现，基于课堂目标生成，要留出老师自由发挥部分";
+                        break;
+                    case "课后扩展":
+                        prompt += "Word形式，一个小的编程科普或计算机原理、数学知识科普给孩子";
+                        break;
+                    default:
+                        prompt += "请根据教育价值合理设计";
+                }
+                
+                prompt += `
+- 其他内容请根据教育价值合理设计
+
+请直接输出${type}内容，不需要额外说明：`;
+            } else {
+                // Uaro课程提示词
+                prompt = `您是一位资深的少儿编程教育专家，请根据以下课程目标生成${type}内容：
+
+课程目标：
+${courseGoals}
+
+请按照以下要求生成内容：
+- 内容需符合3-6岁儿童认知特点
+- 体现游戏化学习理念
+- 格式清晰易读
+- 特别注意：${type}的格式要求为：`;
+                
+                // 根据材料类型添加具体要求
+                switch (type) {
+                    case "课前预热":
+                        prompt += "图片形式，用于课前发给家长的亲子互动游戏，包含制造神秘感的预告话术和简单的家园互动任务，要求以可视化的方式呈现，方便家长理解和参与";
+                        break;
+                    case "课堂游戏设计":
+                        prompt += "Word形式，包含3个递进式游戏活动，每个游戏标注发展领域、用具详情、玩法步骤";
+                        break;
+                    case "板书设计":
+                        prompt += "图片形式，横向三栏布局：知识区、活动区、成果区，图文结合，关键词突出，要求以可视化图表的方式呈现";
+                        break;
+                    case "亲子任务":
+                        prompt += "Word形式，三选一模式（基础版：知识巩固型，进阶版：技能拓展型，创意版：表达创造型）";
+                        break;
+                    case "纸质作业":
+                        prompt += "Word形式，图画为主，文字为辅，融合数学启蒙元素";
+                        break;
+                    case "课后反馈":
+                        prompt += "Word形式，基于课程目标评价孩子表现";
+                        break;
+                    default:
+                        prompt += "请根据教育价值合理设计";
+                }
+                
+                prompt += `
+- 其他内容请根据教育价值合理设计
+
+请直接输出${type}内容，不需要额外说明：`;
+            }
+            
+            return prompt;
+        }
+
+        // 显示课程材料
+        function displayCourseMaterials() {
+            const previewCards = document.getElementById('material-preview-cards');
+            
+            previewCards.innerHTML = '';
+            
+            // 创建预览卡片
+            const materialEntries = Object.entries(courseMaterials);
+            for (let i = 0; i < materialEntries.length; i++) {
+                const [type, content] = materialEntries[i];
+                const card = document.createElement('div');
+                card.className = 'material-card';
+                
+                // 根据材料类型确定导出格式
+                let isImageFormat = false;
+                if (currentCourseType === 'kiro') {
+                    isImageFormat = type.includes('生成家长图片') || type.includes('设计板书');
+                } else if (currentCourseType === 'microcontroller') {
+                    isImageFormat = type.includes('课堂内容') || type.includes('课堂板书');
+                } else if (currentCourseType === 'python') {
+                    isImageFormat = type.includes('课堂内容') || type.includes('课堂板书');
+                } else {
+                    isImageFormat = type.includes('课前预热') || type.includes('板书设计');
+                }
+                
+                // 为每个材料类型生成唯一的ID
+                const uniqueId = type.replace(/\s+/g, '-');
+                
+                card.innerHTML = `
+                    <h3>${type}</h3>
+                    <div style="margin-bottom: 10px;">
+                        <textarea id="textarea-${uniqueId}" style="width: 100%; height: 200px; font-family: 'Segoe UI', system-ui, sans-serif; font-size: 14px; line-height: 1.6; padding: 10px; border: 1px solid #ddd; border-radius: 4px; resize: vertical;">${content}</textarea>
+                    </div>
+                    <div style="margin-top: 10px;">
+                        <button class="btn btn-success" onclick="saveAndExportMaterial('${type}', 'textarea-${uniqueId}')" style="color: white;">保存并导出${type}</button>
+                        <button class="btn btn-secondary" onclick="saveMaterial('${type}', 'textarea-${uniqueId}')" style="color: white; margin-left: 10px;">保存${type}</button>
+                        <button class="btn btn-secondary" onclick="exportMaterial('${type}', 'textarea-${uniqueId}')" style="color: white; margin-left: 10px;">导出${type}</button>
+                        <button class="btn btn-secondary" onclick="openRegenerateDialog('${type}', 'textarea-${uniqueId}')" style="color: white; margin-left: 10px;">重新生成${type}</button>
+                        <span style="margin-left: 10px; font-size: 0.9em; color: #666;">格式: ${isImageFormat ? '图片' : 'Word'}</span>
+                    </div>
+                    <!-- 重新生成对话框 -->
+                    <div id="regenerate-dialog-${uniqueId}" style="display: none; margin-top: 15px; padding: 15px; border: 1px solid #ddd; border-radius: 8px; background: #f9f9f9;">
+                        <h4>重新生成 ${type}</h4>
+                        <div id="chat-history-${uniqueId}" style="max-height: 200px; overflow-y: auto; margin-bottom: 10px; padding: 10px; background: white; border-radius: 4px; border: 1px solid #eee;">
+                            <!-- 对话历史将在这里显示 -->
+                        </div>
+                        <div style="display: flex;">
+                            <input type="text" id="chat-input-${uniqueId}" placeholder="输入您的修改要求..." style="flex: 1; padding: 8px; border: 1px solid #ddd; border-radius: 4px; margin-right: 10px;">
+                            <button class="btn btn-secondary" onclick="sendChatMessage('${type}', 'textarea-${uniqueId}', '${uniqueId}')" style="color: white;">发送</button>
+                            <button class="btn btn-secondary" onclick="closeRegenerateDialog('${uniqueId}')" style="color: white; margin-left: 10px;">关闭</button>
+                        </div>
+                        <div class="loading" id="regenerate-loading-${uniqueId}" style="display: none; margin-top: 10px;">AI正在重新生成内容...</div>
+                    </div>
+                `;
+                previewCards.appendChild(card);
+            }
+            
+            // 显示预览区域
+            document.getElementById('materials-preview').style.display = 'block';
+        }
+
+        // 打开重新生成对话框
+        function openRegenerateDialog(type, textareaId) {
+            const uniqueId = type.replace(/\s+/g, '-');
+            const dialog = document.getElementById(`regenerate-dialog-${uniqueId}`);
+            dialog.style.display = 'block';
+            
+            // 初始化对话历史
+            const chatHistory = document.getElementById(`chat-history-${uniqueId}`);
+            chatHistory.innerHTML = `
+                <div style="margin-bottom: 10px; padding: 8px; background: #e3f2fd; border-radius: 4px;">
+                    <strong>系统:</strong> 您可以告诉我您对"${type}"内容的具体要求，我会根据您的要求重新生成内容。
+                </div>
+            `;
+        }
+
+        // 关闭重新生成对话框
+        function closeRegenerateDialog(uniqueId) {
+            const dialog = document.getElementById(`regenerate-dialog-${uniqueId}`);
+            dialog.style.display = 'none';
+        }
+
+        // 发送聊天消息
+        async function sendChatMessage(type, textareaId, uniqueId) {
+            const input = document.getElementById(`chat-input-${uniqueId}`);
+            const message = input.value.trim();
+            
+            if (!message) {
+                showError("请输入您的修改要求");
+                return;
+            }
+            
+            const chatHistory = document.getElementById(`chat-history-${uniqueId}`);
+            const loading = document.getElementById(`regenerate-loading-${uniqueId}`);
+            
+            // 显示用户消息
+            chatHistory.innerHTML += `
+                <div style="margin-bottom: 10px; padding: 8px; background: #f0f0f0; border-radius: 4px;">
+                    <strong>您:</strong> ${message}
+                </div>
+            `;
+            
+            // 清空输入框
+            input.value = '';
+            
+            // 显示加载状态
+            loading.style.display = 'block';
+            chatHistory.scrollTop = chatHistory.scrollHeight;
+            
+            try {
+                // 构建提示词
+                let prompt = `您是一位资深的少儿编程教育专家。请根据以下要求重新生成"${type}"内容：
+
+当前课程目标：
+${courseGoals}
+
+用户的具体要求：
+${message}
+
+请直接输出修改后的内容，不需要额外说明：`;
+                
+                // 调用AI API
+                const response = await fetch(CONFIG.API_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${CONFIG.API_KEY}`,
+                        'Content-Type': 'application/json',
+                        'X-DashScope-SSE': 'disable'  // 禁用SSE以避免跨域问题
+                    },
+                    body: JSON.stringify({
+                        model: CONFIG.MODEL,
+                        messages: [
+                            {
+                                role: "system",
+                                content: "你是一位资深的少儿编程教育专家，专注于设计高质量的课程内容。"
+                            },
+                            {
+                                role: "user",
+                                content: prompt
+                            }
+                        ],
+                        temperature: 0.7
+                    })
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`API调用失败: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                const newContent = data.choices[0].message.content;
+                
+                // 更新textarea内容
+                const textarea = document.getElementById(textareaId);
+                textarea.value = newContent;
+                
+                // 更新全局变量
+                courseMaterials[type] = newContent;
+                
+                // 显示AI回复
+                chatHistory.innerHTML += `
+                    <div style="margin-bottom: 10px; padding: 8px; background: #e8f5e9; border-radius: 4px;">
+                        <strong>AI:</strong> ${newContent}
+                    </div>
+                `;
+                
+                showSuccess(`${type}内容已更新！`);
+            } catch (error) {
+                console.error("重新生成内容失败:", error);
+                showError(`重新生成内容失败: ${error.message}`);
+                
+                // 显示错误消息
+                chatHistory.innerHTML += `
+                    <div style="margin-bottom: 10px; padding: 8px; background: #fadbd8; border-radius: 4px;">
+                        <strong>系统:</strong> 重新生成内容失败: ${error.message}
+                    </div>
+                `;
+            } finally {
+                loading.style.display = 'none';
+                chatHistory.scrollTop = chatHistory.scrollHeight;
+            }
+        }
+
+        // 保存材料
+        function saveMaterial(type, textareaId) {
+            const textarea = document.getElementById(textareaId);
+            courseMaterials[type] = textarea.value;
+            showSuccess(`${type}已保存！`);
+        }
+
+        // 导出材料
+        function exportMaterial(type, textareaId) {
+            const textarea = document.getElementById(textareaId);
+            const content = textarea.value;
+            
+            // 根据材料类型确定导出格式
+            let isImageFormat = false;
+            if (currentCourseType === 'kiro') {
+                isImageFormat = type.includes('生成家长图片') || type.includes('设计板书');
+            } else if (currentCourseType === 'microcontroller') {
+                isImageFormat = type.includes('课堂内容') || type.includes('课堂板书');
+            } else if (currentCourseType === 'python') {
+                isImageFormat = type.includes('课堂内容') || type.includes('课堂板书');
+            } else {
+                isImageFormat = type.includes('课前预热') || type.includes('板书设计');
+            }
+            
+            if (isImageFormat) {
+                exportMaterialAsImage(type, content, '.png');
+            } else {
+                exportMaterialAsWord(type, content, '.doc');
+            }
+        }
+
+        // 保存并导出材料
+        function saveAndExportMaterial(type, textareaId) {
+            saveMaterial(type, textareaId);
+            exportMaterial(type, textareaId);
+        }
+
+        // 导出为图片
+        function exportMaterialAsImage(type, content, fileExtension) {
+            // 创建临时元素用于渲染
+            const tempDiv = document.createElement('div');
+            tempDiv.style.position = 'absolute';
+            tempDiv.style.left = '-9999px';
+            tempDiv.style.width = '800px';
+            tempDiv.style.padding = '20px';
+            tempDiv.style.background = 'white';
+            tempDiv.style.fontFamily = "'Microsoft YaHei', Arial, sans-serif";
+            
+            // 根据课程类型和材料类型创建不同的模板
+            let innerHTML = '';
+            
+            if (currentCourseType === 'kiro') {
+                if (type.includes('生成家长图片')) {
+                    // Kiro课程家庭任务卡模板
+                    innerHTML = `
+                        <div style="background: white; border-radius: 12px; padding: 20px; font-family: 'Microsoft YaHei', sans-serif; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+                            <div style="text-align: center; padding: 15px; background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%); border-radius: 8px 8px 0 0; color: white;">
+                                <h1 style="margin: 0; font-size: 24px;">🃏 家庭任务卡</h1>
+                                <div style="font-size: 14px; margin-top: 5px;">Kiro课程 · 卡片式编程</div>
+                            </div>
+                            <div style="padding: 20px; background: #f9f9f9;">
+                                <div style="background: white; border-radius: 8px; padding: 15px; margin-bottom: 20px; border-left: 4px solid #9b59b6;">
+                                    <h2 style="color: #9b59b6; margin-top: 0; display: flex; align-items: center;">
+                                        <span style="font-size: 20px; margin-right: 8px;">🎯</span> 今日任务
+                                    </h2>
+                                    <div style="white-space: pre-wrap; font-size: 16px; line-height: 1.6;">${content}</div>
+                                </div>
+                                <div style="display: flex; gap: 20px;">
+                                    <div style="flex: 1; background: white; border-radius: 8px; padding: 15px; border-left: 4px solid #3498db;">
+                                        <h3 style="color: #3498db; margin-top: 0; display: flex; align-items: center;">
+                                            <span style="font-size: 20px; margin-right: 8px;">👨‍👩‍👧‍👦</span> 亲子互动
+                                        </h3>
+                                        <div style="white-space: pre-wrap; font-size: 14px; line-height: 1.6; color: #666;">和孩子一起完成这个有趣的编程任务吧！</div>
+                                    </div>
+                                    <div style="flex: 1; background: white; border-radius: 8px; padding: 15px; border-left: 4px solid #2ecc71;">
+                                        <h3 style="color: #2ecc71; margin-top: 0; display: flex; align-items: center;">
+                                            <span style="font-size: 20px; margin-right: 8px;">🏆</span> 成长收获
+                                        </h3>
+                                        <div style="white-space: pre-wrap; font-size: 14px; line-height: 1.6; color: #666;">逻辑思维、问题解决能力</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div style="padding: 15px; text-align: center; background: #f0f0f0; border-radius: 0 0 8px 8px; font-size: 12px; color: #666;">
+                                由AI智能生成 · ${new Date().toLocaleDateString('zh-CN')}
+                            </div>
+                        </div>
+                    `;
+                } else if (type.includes('设计板书')) {
+                    // Kiro课程可交互编程墙模板
+                    innerHTML = `
+                        <div style="background: white; border-radius: 12px; padding: 20px; font-family: 'Microsoft YaHei', sans-serif; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+                            <div style="text-align: center; padding: 15px; background: linear-gradient(135deg, #3498db 0%, #2980b9 100%); border-radius: 8px 8px 0 0; color: white;">
+                                <h1 style="margin: 0; font-size: 24px;">📋 可交互编程墙</h1>
+                                <div style="font-size: 14px; margin-top: 5px;">Kiro课程 · 卡片式编程</div>
+                            </div>
+                            <div style="padding: 20px; display: flex; gap: 20px;">
+                                <div style="flex: 1; background: #e3f2fd; padding: 15px; border-radius: 8px; border-left: 4px solid #3498db;">
+                                    <h3 style="color: #3498db; margin-top: 0; display: flex; align-items: center;">
+                                        <span style="font-size: 20px; margin-right: 8px;">📖</span> 知识要点
+                                    </h3>
+                                    <div style="white-space: pre-wrap; font-size: 16px; line-height: 1.6; background: white; padding: 10px; border-radius: 4px; border: 1px dashed #3498db;">
+                                        ${content}
+                                    </div>
+                                </div>
+                                <div style="flex: 1; background: #fff3e0; padding: 15px; border-radius: 8px; border-left: 4px solid #f39c12;">
+                                    <h3 style="color: #f39c12; margin-top: 0; display: flex; align-items: center;">
+                                        <span style="font-size: 20px; margin-right: 8px;">🔧</span> 操作步骤
+                                    </h3>
+                                    <div style="white-space: pre-wrap; font-size: 16px; line-height: 1.6; background: white; padding: 10px; border-radius: 4px; border: 1px dashed #f39c12; min-height: 100px;">
+                                        <div style="color: #999; font-style: italic;">请根据课堂实际情况填写操作步骤...</div>
+                                    </div>
+                                </div>
+                                <div style="flex: 1; background: #e8f5e9; padding: 15px; border-radius: 8px; border-left: 4px solid #2ecc71;">
+                                    <h3 style="color: #2ecc71; margin-top: 0; display: flex; align-items: center;">
+                                        <span style="font-size: 20px; margin-right: 8px;">⚠️</span> 注意事项
+                                    </h3>
+                                    <div style="white-space: pre-wrap; font-size: 16px; line-height: 1.6; background: white; padding: 10px; border-radius: 4px; border: 1px dashed #2ecc71; min-height: 100px;">
+                                        <div style="color: #999; font-style: italic;">请根据课堂实际情况填写注意事项...</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div style="padding: 15px; text-align: center; background: #f5f5f5; border-radius: 0 0 8px 8px; font-size: 12px; color: #666;">
+                                由AI智能生成 · ${new Date().toLocaleDateString('zh-CN')}
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    // Kiro课程通用图片模板
+                    innerHTML = `
+                        <div style="background: white; border-radius: 12px; padding: 20px; font-family: 'Microsoft YaHei', sans-serif;">
+                            <div style="text-align: center; padding: 20px; background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%); border-radius: 12px 12px 0 0; color: white;">
+                                <h1 style="margin: 0; font-size: 28px;">${type}</h1>
+                                <div style="font-size: 16px; margin-top: 10px;">Kiro课程 · 卡片式编程</div>
+                            </div>
+                            <div style="padding: 20px; background: #f9f9f9;">
+                                <div style="white-space: pre-wrap; font-size: 16px; line-height: 1.6;">${content}</div>
+                            </div>
+                            <div style="padding: 15px; text-align: center; background: #f0f0f0; border-radius: 0 0 12px 12px; font-size: 12px; color: #666;">
+                                由AI智能生成 · ${new Date().toLocaleDateString('zh-CN')}
+                            </div>
+                        </div>
+                    `;
+                }
+            } else if (currentCourseType === 'microcontroller') {
+                if (type.includes('课堂内容')) {
+                    // 单片机课程课堂内容模板
+                    innerHTML = `
+                        <div style="background: white; border-radius: 12px; padding: 20px; font-family: 'Microsoft YaHei', sans-serif; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+                            <div style="text-align: center; padding: 15px; background: linear-gradient(135deg, #f39c12 0%, #d68910 100%); border-radius: 8px 8px 0 0; color: white;">
+                                <h1 style="margin: 0; font-size: 24px;">⚙️ 课堂内容预告</h1>
+                                <div style="font-size: 14px; margin-top: 5px;">单片机课程 · 2-4年级</div>
+                            </div>
+                            <div style="padding: 20px; background: #f9f9f9;">
+                                <div style="background: white; border-radius: 8px; padding: 15px; margin-bottom: 20px; border-left: 4px solid #f39c12;">
+                                    <h2 style="color: #f39c12; margin-top: 0; display: flex; align-items: center;">
+                                        <span style="font-size: 20px; margin-right: 8px;">🎯</span> 本节课学什么
+                                    </h2>
+                                    <div style="white-space: pre-wrap; font-size: 16px; line-height: 1.6;">${content}</div>
+                                </div>
+                                <div style="display: flex; gap: 20px;">
+                                    <div style="flex: 1; background: white; border-radius: 8px; padding: 15px; border-left: 4px solid #3498db;">
+                                        <h3 style="color: #3498db; margin-top: 0; display: flex; align-items: center;">
+                                            <span style="font-size: 20px; margin-right: 8px;">🧠</span> 孩子将掌握的能力
+                                        </h3>
+                                        <div style="white-space: pre-wrap; font-size: 14px; line-height: 1.6; color: #666;">动手能力、逻辑思维、问题解决能力</div>
+                                    </div>
+                                    <div style="flex: 1; background: white; border-radius: 8px; padding: 15px; border-left: 4px solid #2ecc71;">
+                                        <h3 style="color: #2ecc71; margin-top: 0; display: flex; align-items: center;">
+                                            <span style="font-size: 20px; margin-right: 8px;">📚</span> 相关学科知识
+                                        </h3>
+                                        <div style="white-space: pre-wrap; font-size: 14px; line-height: 1.6; color: #666;">电路基础、编程逻辑、数学运算</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div style="padding: 15px; text-align: center; background: #f0f0f0; border-radius: 0 0 8px 8px; font-size: 12px; color: #666;">
+                                由AI智能生成 · ${new Date().toLocaleDateString('zh-CN')}
+                            </div>
+                        </div>
+                    `;
+                } else if (type.includes('课堂板书')) {
+                    // 单片机课程课堂板书模板
+                    innerHTML = `
+                        <div style="background: white; border-radius: 12px; padding: 20px; font-family: 'Microsoft YaHei', sans-serif; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+                            <div style="text-align: center; padding: 15px; background: linear-gradient(135deg, #3498db 0%, #2980b9 100%); border-radius: 8px 8px 0 0; color: white;">
+                                <h1 style="margin: 0; font-size: 24px;">📋 课堂板书</h1>
+                                <div style="font-size: 14px; margin-top: 5px;">单片机课程 · 2-4年级</div>
+                            </div>
+                            <div style="padding: 20px; display: flex; gap: 20px;">
+                                <div style="flex: 1; background: #e3f2fd; padding: 15px; border-radius: 8px; border-left: 4px solid #3498db;">
+                                    <h3 style="color: #3498db; margin-top: 0; display: flex; align-items: center;">
+                                        <span style="font-size: 20px; margin-right: 8px;">📖</span> 知识要点
+                                    </h3>
+                                    <div style="white-space: pre-wrap; font-size: 16px; line-height: 1.6; background: white; padding: 10px; border-radius: 4px; border: 1px dashed #3498db;">
+                                        ${content}
+                                    </div>
+                                </div>
+                                <div style="flex: 1; background: #fff3e0; padding: 15px; border-radius: 8px; border-left: 4px solid #f39c12;">
+                                    <h3 style="color: #f39c12; margin-top: 0; display: flex; align-items: center;">
+                                        <span style="font-size: 20px; margin-right: 8px;">🔧</span> 操作步骤
+                                    </h3>
+                                    <div style="white-space: pre-wrap; font-size: 16px; line-height: 1.6; background: white; padding: 10px; border-radius: 4px; border: 1px dashed #f39c12; min-height: 100px;">
+                                        <div style="color: #999; font-style: italic;">硬件搭建和编程步骤...</div>
+                                    </div>
+                                </div>
+                                <div style="flex: 1; background: #e8f5e9; padding: 15px; border-radius: 8px; border-left: 4px solid #2ecc71;">
+                                    <h3 style="color: #2ecc71; margin-top: 0; display: flex; align-items: center;">
+                                        <span style="font-size: 20px; margin-right: 8px;">⚠️</span> 注意事项
+                                    </h3>
+                                    <div style="white-space: pre-wrap; font-size: 16px; line-height: 1.6; background: white; padding: 10px; border-radius: 4px; border: 1px dashed #2ecc71; min-height: 100px;">
+                                        <div style="color: #999; font-style: italic;">安全操作和常见问题...</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div style="padding: 15px; text-align: center; background: #f5f5f5; border-radius: 0 0 8px 8px; font-size: 12px; color: #666;">
+                                由AI智能生成 · ${new Date().toLocaleDateString('zh-CN')}
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    // 单片机课程通用图片模板
+                    innerHTML = `
+                        <div style="background: white; border-radius: 12px; padding: 20px; font-family: 'Microsoft YaHei', sans-serif;">
+                            <div style="text-align: center; padding: 20px; background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%); border-radius: 12px 12px 0 0; color: white;">
+                                <h1 style="margin: 0; font-size: 28px;">${type}</h1>
+                                <div style="font-size: 16px; margin-top: 10px;">单片机课程 · 2-4年级</div>
+                            </div>
+                            <div style="padding: 20px; background: #f9f9f9;">
+                                <div style="white-space: pre-wrap; font-size: 16px; line-height: 1.6;">${content}</div>
+                            </div>
+                            <div style="padding: 15px; text-align: center; background: #f0f0f0; border-radius: 0 0 12px 12px; font-size: 12px; color: #666;">
+                                由AI智能生成 · ${new Date().toLocaleDateString('zh-CN')}
+                            </div>
+                        </div>
+                    `;
+                }
+            } else if (currentCourseType === 'python') {
+                if (type.includes('课堂内容')) {
+                    // Python课程课堂内容模板
+                    innerHTML = `
+                        <div style="background: white; border-radius: 12px; padding: 20px; font-family: 'Microsoft YaHei', sans-serif; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+                            <div style="text-align: center; padding: 15px; background: linear-gradient(135deg, #f39c12 0%, #d68910 100%); border-radius: 8px 8px 0 0; color: white;">
+                                <h1 style="margin: 0; font-size: 24px;">🐍 课堂内容预告</h1>
+                                <div style="font-size: 14px; margin-top: 5px;">Python课程 · 4年级到初二</div>
+                            </div>
+                            <div style="padding: 20px; background: #f9f9f9;">
+                                <div style="background: white; border-radius: 8px; padding: 15px; margin-bottom: 20px; border-left: 4px solid #f39c12;">
+                                    <h2 style="color: #f39c12; margin-top: 0; display: flex; align-items: center;">
+                                        <span style="font-size: 20px; margin-right: 8px;">🎯</span> 本节课学什么
+                                    </h2>
+                                    <div style="white-space: pre-wrap; font-size: 16px; line-height: 1.6;">${content}</div>
+                                </div>
+                                <div style="display: flex; gap: 20px;">
+                                    <div style="flex: 1; background: white; border-radius: 8px; padding: 15px; border-left: 4px solid #3498db;">
+                                        <h3 style="color: #3498db; margin-top: 0; display: flex; align-items: center;">
+                                            <span style="font-size: 20px; margin-right: 8px;">🧠</span> 孩子将掌握的能力
+                                        </h3>
+                                        <div style="white-space: pre-wrap; font-size: 14px; line-height: 1.6; color: #666;">编程思维、逻辑思维、问题解决能力</div>
+                                    </div>
+                                    <div style="flex: 1; background: white; border-radius: 8px; padding: 15px; border-left: 4px solid #2ecc71;">
+                                        <h3 style="color: #2ecc71; margin-top: 0; display: flex; align-items: center;">
+                                            <span style="font-size: 20px; margin-right: 8px;">📚</span> 相关学科知识
+                                        </h3>
+                                        <div style="white-space: pre-wrap; font-size: 14px; line-height: 1.6; color: #666;">数学逻辑、英语词汇、计算机原理</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div style="padding: 15px; text-align: center; background: #f0f0f0; border-radius: 0 0 8px 8px; font-size: 12px; color: #666;">
+                                由AI智能生成 · ${new Date().toLocaleDateString('zh-CN')}
+                            </div>
+                        </div>
+                    `;
+                } else if (type.includes('课堂板书')) {
+                    // Python课程课堂板书模板
+                    innerHTML = `
+                        <div style="background: white; border-radius: 12px; padding: 20px; font-family: 'Microsoft YaHei', sans-serif; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+                            <div style="text-align: center; padding: 15px; background: linear-gradient(135deg, #3498db 0%, #2980b9 100%); border-radius: 8px 8px 0 0; color: white;">
+                                <h1 style="margin: 0; font-size: 24px;">📋 课堂板书</h1>
+                                <div style="font-size: 14px; margin-top: 5px;">Python课程 · 4年级到初二</div>
+                            </div>
+                            <div style="padding: 20px; display: flex; gap: 20px;">
+                                <div style="flex: 1; background: #e3f2fd; padding: 15px; border-radius: 8px; border-left: 4px solid #3498db;">
+                                    <h3 style="color: #3498db; margin-top: 0; display: flex; align-items: center;">
+                                        <span style="font-size: 20px; margin-right: 8px;">📖</span> 知识要点
+                                    </h3>
+                                    <div style="white-space: pre-wrap; font-size: 16px; line-height: 1.6; background: white; padding: 10px; border-radius: 4px; border: 1px dashed #3498db;">
+                                        ${content}
+                                    </div>
+                                </div>
+                                <div style="flex: 1; background: #fff3e0; padding: 15px; border-radius: 8px; border-left: 4px solid #f39c12;">
+                                    <h3 style="color: #f39c12; margin-top: 0; display: flex; align-items: center;">
+                                        <span style="font-size: 20px; margin-right: 8px;">🔧</span> 编程思路
+                                    </h3>
+                                    <div style="white-space: pre-wrap; font-size: 16px; line-height: 1.6; background: white; padding: 10px; border-radius: 4px; border: 1px dashed #f39c12; min-height: 100px;">
+                                        <div style="color: #999; font-style: italic;">算法设计和代码实现思路...</div>
+                                    </div>
+                                </div>
+                                <div style="flex: 1; background: #e8f5e9; padding: 15px; border-radius: 8px; border-left: 4px solid #2ecc71;">
+                                    <h3 style="color: #2ecc71; margin-top: 0; display: flex; align-items: center;">
+                                        <span style="font-size: 20px; margin-right: 8px;">⚠️</span> 注意事项
+                                    </h3>
+                                    <div style="white-space: pre-wrap; font-size: 16px; line-height: 1.6; background: white; padding: 10px; border-radius: 4px; border: 1px dashed #2ecc71; min-height: 100px;">
+                                        <div style="color: #999; font-style: italic;">语法要点和常见错误...</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div style="padding: 15px; text-align: center; background: #f5f5f5; border-radius: 0 0 8px 8px; font-size: 12px; color: #666;">
+                                由AI智能生成 · ${new Date().toLocaleDateString('zh-CN')}
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    // Python课程通用图片模板
+                    innerHTML = `
+                        <div style="background: white; border-radius: 12px; padding: 20px; font-family: 'Microsoft YaHei', sans-serif;">
+                            <div style="text-align: center; padding: 20px; background: linear-gradient(135deg, #f39c12 0%, #d68910 100%); border-radius: 12px 12px 0 0; color: white;">
+                                <h1 style="margin: 0; font-size: 28px;">${type}</h1>
+                                <div style="font-size: 16px; margin-top: 10px;">Python课程 · 4年级到初二</div>
+                            </div>
+                            <div style="padding: 20px; background: #f9f9f9;">
+                                <div style="white-space: pre-wrap; font-size: 16px; line-height: 1.6;">${content}</div>
+                            </div>
+                            <div style="padding: 15px; text-align: center; background: #f0f0f0; border-radius: 0 0 12px 12px; font-size: 12px; color: #666;">
+                                由AI智能生成 · ${new Date().toLocaleDateString('zh-CN')}
+                            </div>
+                        </div>
+                    `;
+                }
+            } else {
+                if (type.includes('板书设计')) {
+                    // Uaro课程板书设计使用三栏布局
+                    innerHTML = `
+                        <div style="text-align: center; padding: 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 12px 12px 0 0; color: white;">
+                            <h1 style="margin: 0; font-size: 28px;">📋 ${type}</h1>
+                            <div style="font-size: 16px; margin-top: 10px;">Uaro课程 · 编码积木</div>
+                        </div>
+                        <div style="padding: 20px; background: #f9f9f9;">
+                            <div style="display: flex; gap: 20px;">
+                                <div style="flex: 1; background: #fff; padding: 15px; border-radius: 8px; border-left: 4px solid #3498db; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                                    <h3 style="color: #3498db; margin-top: 0; display: flex; align-items: center;">
+                                        <span style="font-size: 20px; margin-right: 8px;">📚</span> 知识区
+                                    </h3>
+                                    <div style="white-space: pre-wrap; font-size: 16px; line-height: 1.6; background: #f8f9fa; padding: 10px; border-radius: 4px;">
+                                        ${content}
+                                    </div>
+                                </div>
+                                <div style="flex: 1; background: #fff; padding: 15px; border-radius: 8px; border-left: 4px solid #e74c3c; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                                    <h3 style="color: #e74c3c; margin-top: 0; display: flex; align-items: center;">
+                                        <span style="font-size: 20px; margin-right: 8px;">🎯</span> 活动区
+                                    </h3>
+                                    <div style="white-space: pre-wrap; font-size: 16px; line-height: 1.6; background: #f8f9fa; padding: 10px; border-radius: 4px; min-height: 100px;">
+                                        <div style="color: #999; font-style: italic;">课堂活动设计...</div>
+                                    </div>
+                                </div>
+                                <div style="flex: 1; background: #fff; padding: 15px; border-radius: 8px; border-left: 4px solid #2ecc71; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                                    <h3 style="color: #2ecc71; margin-top: 0; display: flex; align-items: center;">
+                                        <span style="font-size: 20px; margin-right: 8px;">🏆</span> 成果区
+                                    </h3>
+                                    <div style="white-space: pre-wrap; font-size: 16px; line-height: 1.6; background: #f8f9fa; padding: 10px; border-radius: 4px; min-height: 100px;">
+                                        <div style="color: #999; font-style: italic;">学生作品展示...</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div style="padding: 15px; text-align: center; background: #f0f0f0; border-radius: 0 0 12px 12px; font-size: 12px; color: #666;">
+                            由AI智能生成 · ${new Date().toLocaleDateString('zh-CN')}
+                        </div>
+                    `;
+                } else if (type.includes('课前预热')) {
+                    // Uaro课程课前预热使用可爱风格模板
+                    innerHTML = `
+                        <div style="text-align: center; padding: 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 12px 12px 0 0; color: white;">
+                            <h1 style="margin: 0; font-size: 28px;">${type}</h1>
+                            <div style="font-size: 16px; margin-top: 10px;">智能课程系统</div>
+                        </div>
+                        <div style="padding: 20px; background: #f9f9f9;">
+                            <div style="white-space: pre-wrap; font-size: 16px; line-height: 1.6;">${content}</div>
+                        </div>
+                        <div style="padding: 15px; text-align: center; background: #f0f0f0; border-radius: 0 0 12px 12px; font-size: 12px; color: #666;">
+                            由AI智能生成 · ${new Date().toLocaleDateString('zh-CN')}
+                        </div>
+                    `;
+                } else {
+                    // Uaro课程其他材料使用通用模板
+                    innerHTML = `
+                        <div style="text-align: center; padding: 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 12px 12px 0 0; color: white;">
+                            <h1 style="margin: 0; font-size: 28px;">${type}</h1>
+                            <div style="font-size: 16px; margin-top: 10px;">智能课程系统</div>
+                        </div>
+                        <div style="padding: 20px; background: #f9f9f9;">
+                            <div style="white-space: pre-wrap; font-size: 16px; line-height: 1.6;">${content}</div>
+                        </div>
+                        <div style="padding: 15px; text-align: center; background: #f0f0f0; border-radius: 0 0 12px 12px; font-size: 12px; color: #666;">
+                            由AI智能生成 · ${new Date().toLocaleDateString('zh-CN')}
+                        </div>
+                    `;
+                }
+            }
+            
+            tempDiv.innerHTML = innerHTML;
+            document.body.appendChild(tempDiv);
+            
+            // 使用html2canvas将内容转换为图片
+            html2canvas(tempDiv, {
+                useCORS: true,
+                scale: 2, // 提高图片质量
+                backgroundColor: null // 保持背景透明
+            }).then(canvas => {
+                // 将canvas转换为图片并下载
+                const link = document.createElement('a');
+                link.download = `${type}${fileExtension}`;
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+                
+                // 移除临时元素
+                document.body.removeChild(tempDiv);
+                
+                showSuccess(`${type}已导出为图片！`);
+            }).catch(error => {
+                console.error('导出图片失败:', error);
+                showError(`导出图片失败: ${error.message}`);
+                
+                // 移除临时元素
+                document.body.removeChild(tempDiv);
+            });
+        }
+
+        // 导出为Word文档
+        function exportMaterialAsWord(type, content, fileExtension) {
+            // 根据课程类型和材料类型创建不同的模板
+            let wordContent = '';
+            
+            if (currentCourseType === 'kiro') {
+                // Kiro课程通用Word模板
+                wordContent = `
+<html xmlns:o='urn:schemas-microsoft-com:office:office' 
+      xmlns:w='urn:schemas-microsoft-com:office:word' 
+      xmlns='http://www.w3.org/TR/REC-html40'>
+<head>
+    <meta charset='utf-8'>
+    <title>${type}</title>
+    <!--[if gte mso 9]>
+    <xml>
+        <w:WordDocument>
+            <w:View>Print</w:View>
+            <w:Zoom>100</w:Zoom>
+            <w:DoNotOptimizeForBrowser/>
+        </w:WordDocument>
+    </xml>
+    <![endif]-->
+    <style>
+        body {
+            font-family: "Microsoft YaHei", Arial, sans-serif;
+            font-size: 14px;
+            line-height: 1.6;
+            margin: 40px;
+            background: #fafafa;
+        }
+        h1 {
+            color: #9b59b6;
+            text-align: center;
+            padding-bottom: 10px;
+            background: linear-gradient(135deg, #d9b3ff 0%, #c299ff 100%);
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        .content {
+            background: #fff;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            color: #7f8c8d;
+            font-size: 12px;
+        }
+        pre {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #9b59b6;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+    </style>
+</head>
+<body>
+    <h1>✨ ${type} ✨</h1>
+    <div class="content">
+        <pre>${content}</pre>
+    </div>
+    <div class="footer">
+        生成时间: ${new Date().toLocaleString('zh-CN')}<br>
+        提示: 教师可直接在此文档中编辑和修改内容
+    </div>
+</body>
+</html>`;
+            } else if (currentCourseType === 'microcontroller') {
+                // 单片机课程通用Word模板
+                wordContent = `
+<html xmlns:o='urn:schemas-microsoft-com:office:office' 
+      xmlns:w='urn:schemas-microsoft-com:office:word' 
+      xmlns='http://www.w3.org/TR/REC-html40'>
+<head>
+    <meta charset='utf-8'>
+    <title>${type}</title>
+    <!--[if gte mso 9]>
+    <xml>
+        <w:WordDocument>
+            <w:View>Print</w:View>
+            <w:Zoom>100</w:Zoom>
+            <w:DoNotOptimizeForBrowser/>
+        </w:WordDocument>
+    </xml>
+    <![endif]-->
+    <style>
+        body {
+            font-family: "Microsoft YaHei", Arial, sans-serif;
+            font-size: 14px;
+            line-height: 1.6;
+            margin: 40px;
+            background: #fafafa;
+        }
+        h1 {
+            color: #2ecc71;
+            text-align: center;
+            padding-bottom: 10px;
+            background: linear-gradient(135deg, #d5f5e3 0%, #c0f0d0 100%);
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        .content {
+            background: #fff;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            color: #7f8c8d;
+            font-size: 12px;
+        }
+        pre {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #2ecc71;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+    </style>
+</head>
+<body>
+    <h1>✨ ${type} ✨</h1>
+    <div class="content">
+        <pre>${content}</pre>
+    </div>
+    <div class="footer">
+        生成时间: ${new Date().toLocaleString('zh-CN')}<br>
+        提示: 教师可直接在此文档中编辑和修改内容
+    </div>
+</body>
+</html>`;
+            } else if (currentCourseType === 'python') {
+                // Python课程通用Word模板
+                wordContent = `
+<html xmlns:o='urn:schemas-microsoft-com:office:office' 
+      xmlns:w='urn:schemas-microsoft-com:office:word' 
+      xmlns='http://www.w3.org/TR/REC-html40'>
+<head>
+    <meta charset='utf-8'>
+    <title>${type}</title>
+    <!--[if gte mso 9]>
+    <xml>
+        <w:WordDocument>
+            <w:View>Print</w:View>
+            <w:Zoom>100</w:Zoom>
+            <w:DoNotOptimizeForBrowser/>
+        </w:WordDocument>
+    </xml>
+    <![endif]-->
+    <style>
+        body {
+            font-family: "Microsoft YaHei", Arial, sans-serif;
+            font-size: 14px;
+            line-height: 1.6;
+            margin: 40px;
+            background: #fafafa;
+        }
+        h1 {
+            color: #f39c12;
+            text-align: center;
+            padding-bottom: 10px;
+            background: linear-gradient(135deg, #ffe5b4 0%, #ffd799 100%);
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        .content {
+            background: #fff;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            color: #7f8c8d;
+            font-size: 12px;
+        }
+        pre {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #f39c12;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+    </style>
+</head>
+<body>
+    <h1>✨ ${type} ✨</h1>
+    <div class="content">
+        <pre>${content}</pre>
+    </div>
+    <div class="footer">
+        生成时间: ${new Date().toLocaleString('zh-CN')}<br>
+        提示: 教师可直接在此文档中编辑和修改内容
+    </div>
+</body>
+</html>`;
+            } else {
+                // Uaro课程通用可爱风格模板
+                wordContent = `
+<html xmlns:o='urn:schemas-microsoft-com:office:office' 
+      xmlns:w='urn:schemas-microsoft-com:office:word' 
+      xmlns='http://www.w3.org/TR/REC-html40'>
+<head>
+    <meta charset='utf-8'>
+    <title>${type}</title>
+    <!--[if gte mso 9]>
+    <xml>
+        <w:WordDocument>
+            <w:View>Print</w:View>
+            <w:Zoom>100</w:Zoom>
+            <w:DoNotOptimizeForBrowser/>
+        </w:WordDocument>
+    </xml>
+    <![endif]-->
+    <style>
+        body {
+            font-family: "Microsoft YaHei", Arial, sans-serif;
+            font-size: 14px;
+            line-height: 1.6;
+            margin: 40px;
+            background: #fafafa;
+        }
+        h1 {
+            color: #673ab7;
+            text-align: center;
+            padding-bottom: 10px;
+            background: linear-gradient(135deg, #d4fc79 0%, #96e6a1 100%);
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        .content {
+            background: #fff;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            color: #7f8c8d;
+            font-size: 12px;
+        }
+        pre {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #d4fc79;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+    </style>
+</head>
+<body>
+    <h1>✨ ${type} ✨</h1>
+    <div class="content">
+        <pre>${content}</pre>
+    </div>
+    <div class="footer">
+        生成时间: ${new Date().toLocaleString('zh-CN')}<br>
+        提示: 教师可直接在此文档中编辑和修改内容
+    </div>
+</body>
+</html>`;
+            }
+
+            // 创建Blob对象
+            const blob = new Blob([wordContent], {
+                type: 'application/msword'
+            });
+            
+            // 创建下载链接
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${type}${fileExtension}`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            showSuccess(`${type}已导出为Word文档！`);
+        }
+
+        // 保存所有材料
+        function saveAllMaterials() {
+            // 保存所有textarea中的内容到courseMaterials对象
+            const textareas = document.querySelectorAll('textarea[id^="textarea-"]');
+            textareas.forEach(textarea => {
+                const type = textarea.id.replace('textarea-', '').replace(/-/g, ' ');
+                courseMaterials[type] = textarea.value;
+            });
+            
+            showSuccess("所有材料已保存！");
+        }
+
+        // 导出所有材料
+        function exportAllMaterials() {
+            // 导出所有材料
+            const materialEntries = Object.entries(courseMaterials);
+            for (let i = 0; i < materialEntries.length; i++) {
+                const [type, content] = materialEntries[i];
+                
+                // 根据材料类型确定导出格式
+                let isImageFormat = false;
+                if (currentCourseType === 'kiro') {
+                    isImageFormat = type.includes('生成家长图片') || type.includes('设计板书');
+                } else if (currentCourseType === 'microcontroller') {
+                    isImageFormat = type.includes('课堂内容') || type.includes('课堂板书');
+                } else if (currentCourseType === 'python') {
+                    isImageFormat = type.includes('课堂内容') || type.includes('课堂板书');
+                } else {
+                    isImageFormat = type.includes('课前预热') || type.includes('板书设计');
+                }
+                
+                if (isImageFormat) {
+                    exportMaterialAsImage(type, content, '.png');
+                } else {
+                    exportMaterialAsWord(type, content, '.doc');
+                }
+            }
+            
+            showSuccess("所有材料已开始导出！");
+        }
+
+        // 保存并导出所有材料
+        function saveAndExportAllMaterials() {
+            saveAllMaterials();
+            exportAllMaterials();
+        }
+
+        // 事件监听
+        document.getElementById('course-theme').addEventListener('keypress', e => {
+            if (e.key === 'Enter') generateCourseGoals();
+        });
+        
+        // 添加文件上传处理函数
+        document.getElementById('file-input').addEventListener('change', handleFileUpload);
+        
+        // 处理文件上传
+        function handleFileUpload() {
+            const fileInput = document.getElementById('file-input');
+            const files = fileInput.files;
+            
+            if (files.length === 0) {
+                showError("请选择要上传的文件");
+                return;
+            }
+            
+            for (let i = 0; i < files.length; i++) {
+                const file = files[i];
+                
+                // 检查文件大小
+                if (file.size > CONFIG.MAX_FILE_SIZE) {
+                    showError(`文件 ${file.name} 超过10MB限制`);
+                    continue;
+                }
+                
+                // 检查文件类型
+                if (!CONFIG.ALLOWED_TYPES.includes(file.type) && !file.name.match(/\.(ppt|pptx|pdf|doc|docx|txt)$/i)) {
+                    showError(`文件 ${file.name} 类型不支持`);
+                    continue;
+                }
+                
+                // 添加到上传列表
+                uploadedFiles.push(file);
+                
+                // 显示文件列表
+                const fileList = document.getElementById('file-list');
+                const listItem = document.createElement('div');
+                listItem.className = 'file-item';
+                listItem.innerHTML = `
+                    <span>${file.name} (${(file.size / 1024 / 1024).toFixed(2)} MB)</span>
+                    <button class="btn btn-danger" onclick="removeFile('${file.name}')" style="color: white; padding: 5px 10px; font-size: 0.9rem;">删除</button>
+                `;
+                fileList.appendChild(listItem);
+            }
+            
+            // 清空文件输入
+            fileInput.value = '';
+            
+            showSuccess("文件上传成功！");
+        }
+        
+        // 删除文件
+        function removeFile(fileName) {
+            uploadedFiles = uploadedFiles.filter(file => file.name !== fileName);
+            
+            // 更新文件列表
+            const fileList = document.getElementById('file-list');
+            const items = fileList.querySelectorAll('.file-item');
+            items.forEach(item => {
+                if (item.querySelector('span').textContent.startsWith(fileName)) {
+                    item.remove();
+                }
+            });
+        }
+    </script>
+</body>
+</html>
